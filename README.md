@@ -1,4 +1,4 @@
-## Netflix and Youtube controler
+## Netflix and Youtube controller
 
 Auto Hotkey script to control Netflix and Youtube using an Xbox gamepad
 
