@@ -1,32 +1,35 @@
-#Persistent
-#SingleInstance force
-; checa o estado dos triggerButtons a cada 80ms
-SetTimer, watchTriggerButton, 80 
-
-; checa o estado dos padButtons a cada 80ms
-SetTimer, watchPadButtons, 80
-
-; checa o estado do joystick direito a cada 10ms
-SetTimer, watchRightJoy, 10
+; CONFIG -------------------------------------------------------------------------------------------------
 
 ; Macro Screen Shot:
 screenShotCount = 1
-screenShotFolder = desktop	; colocar aqui a pasta onde os screenshots serão salvos
+screenShotFolder = desktop	; write here the folder you want to save the screenshots (desktop as default)
 
-; CALIBRAGEM controle do mouse com o joystick
-; valores dos eixos do joystick direito quando parado
+; Joystick mouse control calibration: idle joystick axis values
 rightJoyParadoUpDown = 50
 rightJoyParadoLeftRight = 50
-; quanto maior o valor de sensibilidade, mais será preciso mover o joystick para mover o cursor
-sensibilidade = 8
+; Joystick sensibility: the higher the number, the lesser the sensibility
+sensibility = 8
 
-joyUp := rightJoyParadoUpDown - sensibilidade
-joyDown := rightJoyParadoUpDown + sensibilidade
-joyLeft := rightJoyParadoLeftRight - sensibilidade
-joyRight := rightJoyParadoLeftRight + sensibilidade
+; SCRIPT -------------------------------------------------------------------------------------------------
+#Persistent
+#SingleInstance force
+
+joyUp := rightJoyParadoUpDown - sensibility
+joyDown := rightJoyParadoUpDown + sensibility
+joyLeft := rightJoyParadoLeftRight - sensibility
+joyRight := rightJoyParadoLeftRight + sensibility
+
+; check trigger buttons state every 80ms
+SetTimer, watchTriggerButton, 80 
+
+; check directional pad butons state every 80ms
+SetTimer, watchPadButtons, 80
+
+; check right joystick state every 10ms
+SetTimer, watchRightJoy, 10
 
 
-;LB diminui 5 volume
+;LB turns the volume down by 5
 Joy5::
 While GetKeyState("Joy5","P"){
 	SoundSet -5
@@ -35,7 +38,7 @@ While GetKeyState("Joy5","P"){
 Return
 
 
-;RB aumenta 5 volume
+;RB turns the volume up by 5
 Joy6::
 While GetKeyState("Joy6","P"){
 	SoundSet +5
@@ -43,10 +46,10 @@ While GetKeyState("Joy6","P"){
 }
 Return
 
-; Start muta/desmuta o áudio
+; Start mutes/unmutes audio
 Joy8::SoundSet, +1, , mute
 
-; X é a seta pra esquerda, que no Netflix e no YouTube voltam 10 segundos do vídeo
+; X/blue presses the left key (video backward in Netflix and Youtube)
 Joy3::
 While GetKeyState("Joy3","P"){
 	Send {Left}
@@ -54,7 +57,7 @@ While GetKeyState("Joy3","P"){
 }
 Return
 
-; B é a seta pra direita, que no Netflix e no YouTube avançam 10 segundos do vídeo
+; B/red presses the right key (video forward in Netflix and Youtube)
 Joy2::
 While GetKeyState("Joy2","P"){
 	Send {Right}
@@ -62,13 +65,13 @@ While GetKeyState("Joy2","P"){
 }
 Return
 
-; A é Espaço, que no Netflix e no YouTube são PLAY
+; A/green presses Space (play/pause in Netflix and Youtube)
 Joy1::Space
 
-; Y é F, que no Netflix e no Youtube são FullScreen
+; Y/yellow presses F (toggle fullscreen in Netflix and Youtube)
 Joy4::F
 
-; BackButton dá print screen 
+; BackButton saves a screenshot in the selected folder 
 Joy7::
 {
 	Send {PrintScreen}
@@ -90,9 +93,9 @@ Joy7::
 	Return
 }
 
-; Controle dos botões do mouse com os triggerButtons
-; RT = botão esquerdo do mouse
-; LT = botão direito do mouse
+; Control mouse clicks with the trigger buttons
+; RT = left click
+; LT = right click
 watchTriggerButton:
 	GetKeyState, triggerButton, JoyZ	
 		if triggerButton < 10
@@ -101,10 +104,10 @@ watchTriggerButton:
 			MouseClick, right
 	return
 
-; R3 é o botão do meio do mouse
+; R3 = mouse middle button click (useful to close browser tabs)
 Joy10::MButton
 
-; controle dos botões do PAD
+; Directional pad control
 ; padUp = mouseWheelUp
 ; padDown =  mouseWheelDown
 ; padLeft = 4th mouse button (browser back)
@@ -121,12 +124,12 @@ watchPadButtons:
 			MouseClick, X2
 	return
 
-; Joystick direito controla o mouse
+; Right joystick controls the mouse cursor
 watchRightJoy:
 	moverMouse := false
 	GetKeyState, rightJoyUpDown, JoyR
 	GetKeyState, rightJoyLeftRight, JoyU
-	; controle do movimento para cima e para baixo
+	; Up/Down control
 	if rightJoyUpDown < %joyUp%					; moveu joy para cima 
 	{				
 		moverMouse := true
@@ -139,6 +142,7 @@ watchRightJoy:
 	}
 	else
 		deltaY = 0
+	; Left/Right control
 	if rightJoyLeftRight < %joyLeft%			; moveu joy para esquerda
 	{			
 		moverMouse := true
@@ -159,10 +163,5 @@ watchRightJoy:
 	}
 	return
 	
-; L3 fecha o script
+; L3 terminates the script
 Joy9::ExitApp
-
-
-
-
-
