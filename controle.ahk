@@ -1,7 +1,6 @@
 ; CONFIG -------------------------------------------------------------------------------------------------
 
 ; Macro Screen Shot:
-screenShotCount = 1
 screenShotFolder = desktop	; write here the folder you want to save the screenshots (desktop as default)
 
 ; Joystick mouse control calibration: idle joystick axis values
@@ -74,14 +73,14 @@ Joy4::F
 ; BackButton saves a screenshot in the selected folder 
 Joy7::
 {
+	FormatTime, CurrentDateTime,, yy-MM-dd HH.mm
 	Send {PrintScreen}
 	Run C:\Windows\System32\mspaint.exe
 	Sleep 500	; espera meio segundo pra dar tempo de o paint abrir
 	Send ^v		; CTRL+V
 	Send ^s		; CTRL+S
 	Sleep 500	; espera meio segundo pra dar tempo de a janela de salvar abrir
-	Send ScreenShot%screenShotCount%
-	screenShotCount++
+	Send ScreenShot{Space}%CurrentDateTime%
 	Send {F4}	; leva o vursor pra caixa onde se seleciona a pasta para salvar
 	Send ^a		; CTRL+A
 	Send %screenShotFolder%	; seleciona a pasta escolhida para salvar os screenshots
