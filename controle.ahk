@@ -4,19 +4,22 @@
 screenShotFolder = desktop	; write here the folder you want to save the screenshots (desktop as default)
 
 ; Joystick mouse control calibration: idle joystick axis values
-rightJoyParadoUpDown = 50
-rightJoyParadoLeftRight = 50
-; Joystick sensibility: the higher the number, the lesser the sensibility
+joyParadoUpDown = 50
+joyParadoLeftRight = 50
+; Joystick sensibility: the higher the number, the more you have to move the joystick to start the cursor's movement
 sensibility = 8
+; Left joystick cursor speed. Use the left joystick to move the cursor slowly. Set here the cursor speed
+; The greater the number, the slower the cursor moves
+speed = 20
 
 ; SCRIPT -------------------------------------------------------------------------------------------------
 #Persistent
 #SingleInstance force
 
-joyUp := rightJoyParadoUpDown - sensibility
-joyDown := rightJoyParadoUpDown + sensibility
-joyLeft := rightJoyParadoLeftRight - sensibility
-joyRight := rightJoyParadoLeftRight + sensibility
+joyUp := joyParadoUpDown - sensibility
+joyDown := joyParadoUpDown + sensibility
+joyLeft := joyParadoLeftRight - sensibility
+joyRight := joyParadoLeftRight + sensibility
 
 ; check trigger buttons state every 80ms
 SetTimer, watchTriggerButton, 80 
@@ -26,6 +29,10 @@ SetTimer, watchPadButtons, 80
 
 ; check right joystick state every 10ms
 SetTimer, watchRightJoy, 10
+
+; check left joystick state every 10ms
+SetTimer, watchLeftJoy, 10
+
 
 
 ;LB turns the volume down by 5
@@ -123,18 +130,18 @@ watchPadButtons:
 			MouseClick, X2
 	return
 
-; Right joystick controls the mouse cursor
+; Right joystick moves the mouse cursor rapidly
 watchRightJoy:
 	moverMouse := false
 	GetKeyState, rightJoyUpDown, JoyR
-	GetKeyState, rightJoyLeftRight, JoyU
+	GetKeyState, joyLeftRight, JoyU
 	; Up/Down control
-	if rightJoyUpDown < %joyUp%					; moveu joy para cima 
+	if rightJoyUpDown < %joyUp%				; moveu joy para cima 
 	{				
 		moverMouse := true
 		deltaY := rightJoyUpDown - joyUp
 	} 
-	else if rightJoyUpDown > %joyDown%			; moveu joy para baixo
+	else if rightJoyUpDown > %joyDown%		; moveu joy para baixo
 	{
 		moverMouse := true
 		deltaY := rightJoyUpDown - joyDown	
@@ -142,15 +149,15 @@ watchRightJoy:
 	else
 		deltaY = 0
 	; Left/Right control
-	if rightJoyLeftRight < %joyLeft%			; moveu joy para esquerda
+	if joyLeftRight < %joyLeft%				; moveu joy para esquerda
 	{			
 		moverMouse := true
-		deltaX := rightJoyLeftRight - joyLeft
+		deltaX := joyLeftRight - joyLeft
 	} 
-	else if rightJoyLeftRight > %joyRight%		; moveu joy para direita
+	else if joyLeftRight > %joyRight%		; moveu joy para direita
 	{	
 		moverMouse := true
-		deltaX := rightJoyLeftRight - joyRight
+		deltaX := joyLeftRight - joyRight
 	} 
 	else
 		deltaX = 0	
@@ -161,6 +168,46 @@ watchRightJoy:
 		MouseMove, deltaX, deltaY, , R
 	}
 	return
+	
+; Left joystick moves the mouse cursor slowly
+watchLeftJoy:
+	moverMouse := false
+	GetKeyState, joyUpDown, JoyY
+	GetKeyState, joyLeftRight, JoyX
+	; Up/Down control
+	if JoyUpDown < %joyUp%					; moveu joy para cima 
+	{				
+		moverMouse := true
+		deltaY := joyUpDown - joyUp
+	} 
+	else if joyUpDown > %joyDown%			; moveu joy para baixo
+	{
+		moverMouse := true
+		deltaY := joyUpDown - joyDown	
+	}
+	else
+		deltaY = 0
+	; Left/Right control
+	if joyLeftRight < %joyLeft%				; moveu joy para esquerda
+	{			
+		moverMouse := true
+		deltaX := joyLeftRight - joyLeft
+	} 
+	else if joyLeftRight > %joyRight%		; moveu joy para direita
+	{	
+		moverMouse := true
+		deltaX := joyLeftRight - joyRight
+	} 
+	else
+		deltaX = 0	
+	
+	if moverMouse
+	{
+		SetMouseDelay, -1
+		MouseMove, deltaX/speed, deltaY/speed, , R
+	}
+	return
+
 	
 ; L3 terminates the script
 Joy9::ExitApp
