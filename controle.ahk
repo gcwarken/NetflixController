@@ -52,8 +52,8 @@ While GetKeyState("Joy6","P"){
 }
 Return
 
-; Start mutes/unmutes audio
-Joy8::SoundSet, +1, , mute
+; Start = home key (good to go back to the top of a web page)
+Joy8::Home
 
 ; X/blue presses the left key (video backward in Netflix and Youtube)
 Joy3::
